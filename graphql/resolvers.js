@@ -27,11 +27,11 @@ module.exports = {
 
         // Check if username/email exist
         // if user not exist return null
-        const userByUsername = await User.findOne({where: {username}});
-        const userByEmail = await User.findOne({where: {email}});
-
-        if (userByUsername) errors.username = 'username is taken';
-        if (userByEmail) errors.email = 'email is taken';
+        // const userByUsername = await User.findOne({where: {username}});
+        // const userByEmail = await User.findOne({where: {email}});
+        //
+        // if (userByUsername) errors.username = 'username is taken';
+        // if (userByEmail) errors.email = 'email is taken';
 
         if(Object.keys(errors).length > 0) {
           throw new UserInputError('',errors);
@@ -51,6 +51,10 @@ module.exports = {
         return user;
       } catch (err) {
         console.error(err);
+        if(err.name === 'SequelizeUniqueConstraintError') {
+          // take all errors from database error object, like username or email unique
+          err.errors.forEach(e => (errors[e.path] = e.message));
+        }
         throw new UserInputError('Bad input',{errors: err});
       }
     }
