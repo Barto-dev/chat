@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const {UserInputError, AuthenticationError} = require('apollo-server');
 const jwt = require('jsonwebtoken');
+const {Op} = require('sequelize');
 
 const {User} = require('../models');
 const {JWT_SECRET} = require('../config/env.json');
@@ -8,11 +9,28 @@ const {JWT_SECRET} = require('../config/env.json');
 
 module.exports = {
   Query: {
-    getUsers: async () => {
+    getUsers: async (_, __, context) => {
+
       try {
-        return await User.findAll()
+        let user;
+        if (context.req && context.req.headers.authorization) {
+          const token = context.req.headers.authorization.split('Bearer ')[1];
+          // JWT secret to make sure that the token was issued by our server
+          jwt.verify(token, JWT_SECRET, (err, decodedToken) => {
+            if (err) {
+              console.log(err)
+              throw new AuthenticationError('Unauthenticated')
+            }
+            user = decodedToken;
+          })
+        }
+        // get all users without user who make request
+        return await User.findAll({
+          where: {username: {[Op.ne]: user.username}}
+        })
       } catch (err) {
-        console.error(err)
+        console.error(err);
+        throw err;
       }
     },
     login: async (_, args) => {
