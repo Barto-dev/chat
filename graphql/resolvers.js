@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const {UserInputError} = require('apollo-server');
+const {UserInputError, AuthenticationError} = require('apollo-server');
 const {User} = require('../models')
 
 module.exports = {
@@ -11,6 +11,41 @@ module.exports = {
         console.error(err)
       }
     },
+    login: async (_, args) => {
+      const {username, password} = args;
+      let errors = {};
+      try {
+        if (username.trim() === '') errors.username = 'username must not be empty';
+        if (password === '') errors.password = 'password must not be empty';
+
+        if (Object.keys(errors).length > 0) {
+          throw new UserInputError('bad input', {errors})
+        }
+
+        const user = await User.findOne({
+          where: {username}
+        });
+
+        if (!user) {
+          errors.username = 'user not found';
+           throw new UserInputError('user not found', {errors})
+        }
+
+
+
+        const correctPassword = await bcrypt.compare(password, user.password);
+        if (!correctPassword) {
+          errors.password = 'password is incorrect';
+          throw new AuthenticationError('password is incorrect', {errors})
+        }
+
+        return user;
+
+      } catch (err) {
+        console.error(err);
+        throw err;
+      }
+    }
   },
   Mutation: {
     register: async (_, args) => {
@@ -53,9 +88,11 @@ module.exports = {
         console.error(err);
         if(err.name === 'SequelizeUniqueConstraintError') {
           // take all errors from database error object, like username or email unique
-          err.errors.forEach(e => (errors[e.path] = e.message));
+          err.errors.forEach(e => (errors[e.path] = `${e.path} is already taken`));
+        } else if (err.name = 'SequelizeValidationError') {
+          err.errors.forEach(e => errors[e.path] = e.message)
         }
-        throw new UserInputError('Bad input',{errors: err});
+        throw new UserInputError('Bad input',{errors});
       }
     }
   }
