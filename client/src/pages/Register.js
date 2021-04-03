@@ -64,6 +64,7 @@ const Register = () => {
             </Form.Label>
             <Form.Control type="email"
                           name="email"
+                          className={errors.email && 'is-invalid'}
                           value={variables.email}
                           onChange={onChangeInput}
             />
@@ -74,6 +75,7 @@ const Register = () => {
             </Form.Label>
             <Form.Control type="text"
                           name="username"
+                          className={errors.username && 'is-invalid'}
                           value={variables.username}
                           onChange={onChangeInput} />
           </Form.Group>
@@ -83,6 +85,7 @@ const Register = () => {
             </Form.Label>
             <Form.Control type="password"
                           name="password"
+                          className={errors.password && 'is-invalid'}
                           value={variables.password}
                           onChange={onChangeInput} />
           </Form.Group>
@@ -92,6 +95,7 @@ const Register = () => {
             </Form.Label>
             <Form.Control type="password"
                           name="confirmPassword"
+                          className={errors.confirmPassword && 'is-invalid'}
                           value={variables.confirmPassword}
                           onChange={onChangeInput} />
           </Form.Group>
