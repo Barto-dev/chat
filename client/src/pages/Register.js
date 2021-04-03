@@ -1,6 +1,7 @@
 import {useState} from 'react';
 import {Row, Col, Form, Button} from 'react-bootstrap';
 import {gql, useMutation} from '@apollo/client';
+import {Link} from 'react-router-dom';
 
 const REGISTER_USER = gql`
     mutation register(
@@ -76,7 +77,7 @@ const Register = (props) => {
           </Form.Group>
           <Form.Group>
             <Form.Label className={errors.password && 'text-danger'}>
-              {errors.password ?? 'Password address'}
+              {errors.password ?? 'Password'}
             </Form.Label>
             <Form.Control type="password"
                           name="password"
@@ -98,6 +99,8 @@ const Register = (props) => {
             <Button variant="success" type="submit" disabled={loading}>
               {loading ? 'Loading...' : 'Register'}
             </Button>
+            <br />
+            <small>Already have an account?<Link to="/login">Login</Link></small>
           </div>
 
         </Form>
