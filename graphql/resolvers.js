@@ -116,7 +116,7 @@ module.exports = {
         if(err.name === 'SequelizeUniqueConstraintError') {
           // take all errors from database error object, like username or email unique
           err.errors.forEach(e => (errors[e.path] = `${e.path} is already taken`));
-        } else if (err.name = 'SequelizeValidationError') {
+        } else if (err.name === 'SequelizeValidationError') {
           err.errors.forEach(e => errors[e.path] = e.message)
         }
         throw new UserInputError('Bad input',{errors});

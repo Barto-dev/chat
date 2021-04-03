@@ -1,5 +1,24 @@
 import {useState} from 'react';
 import {Row, Col, Form, Button} from 'react-bootstrap';
+import {gql, useMutation} from '@apollo/client';
+
+const REGISTER_USER = gql`
+    mutation register(
+        $username: String!
+        $email: String!
+        $password: String!
+        $confirmPassword: String!) {
+        register(
+            username: $username,
+            email: $email,
+            password: $password,
+            confirmPassword: $confirmPassword) {
+            username
+            email
+            createdAt
+        }
+    }
+`;
 
 const Register = () => {
 
@@ -10,9 +29,21 @@ const Register = () => {
     confirmPassword: '',
   });
 
+  const [errors, setErrors] = useState({})
+
+  const [registerUser, {loading}] = useMutation(REGISTER_USER, {
+    update(_, res) {
+      console.log(res);
+    },
+    onError(err) {
+      console.log(err.graphQLErrors[0].extensions.errors);
+      setErrors(err.graphQLErrors[0].extensions.errors);
+    }
+  });
+
   const submitRegisterForm = (evt) => {
     evt.preventDefault();
-    console.log(variables)
+    registerUser({variables})
   }
 
   const onChangeInput = (evt) => {
@@ -28,7 +59,9 @@ const Register = () => {
         <h1 className="text-center">Register</h1>
         <Form onSubmit={submitRegisterForm}>
           <Form.Group>
-            <Form.Label>Email address</Form.Label>
+            <Form.Label className={errors.email && 'text-danger'}>
+              {errors.email ?? 'Email address'}
+            </Form.Label>
             <Form.Control type="email"
                           name="email"
                           value={variables.email}
@@ -36,29 +69,35 @@ const Register = () => {
             />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Username</Form.Label>
+            <Form.Label className={errors.username && 'text-danger'}>
+              {errors.username ?? 'Username'}
+            </Form.Label>
             <Form.Control type="text"
                           name="username"
                           value={variables.username}
                           onChange={onChangeInput} />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Password</Form.Label>
+            <Form.Label className={errors.password && 'text-danger'}>
+              {errors.password ?? 'Password address'}
+            </Form.Label>
             <Form.Control type="password"
                           name="password"
                           value={variables.password}
                           onChange={onChangeInput} />
           </Form.Group>
           <Form.Group>
-            <Form.Label>Confirm password</Form.Label>
+            <Form.Label className={errors.confirmPassword && 'text-danger'}>
+              {errors.confirmPassword ?? 'Confirm password'}
+            </Form.Label>
             <Form.Control type="password"
                           name="confirmPassword"
                           value={variables.confirmPassword}
                           onChange={onChangeInput} />
           </Form.Group>
           <div className="text-center">
-            <Button variant="success" type="submit">
-              Register
+            <Button variant="success" type="submit" disabled={loading}>
+              {loading ? 'Loading...' : 'Register'}
             </Button>
           </div>
 

@@ -1,5 +1,6 @@
 {
   "scripts": {
+    "dev": "nodemon server.js --ignore client/",
     "start": "nodemon server.js"
   },
   "dependencies": {
