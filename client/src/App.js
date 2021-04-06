@@ -1,10 +1,12 @@
 import ApolloProvider from './apollo/ApolloProvider';
-import {BrowserRouter, Route, Switch} from 'react-router-dom';
+import {BrowserRouter, Switch} from 'react-router-dom';
 import {Container} from 'react-bootstrap';
 
 import Register from './pages/Register';
 import Login from './pages/Login';
 import Home from './pages/Home';
+
+import DynamicRoute from './util/DynamicRoute';
 
 import {AuthProvider} from './context/auth';
 
@@ -19,9 +21,11 @@ const App = () => {
         <BrowserRouter>
           <Container className="pt-5">
             <Switch>
-              <Route exact path="/" component={Home} />
-              <Route path="/register" component={Register} />
-              <Route path="/login" component={Login} />
+
+              <DynamicRoute exact path="/" component={Home} authenticated={true}/>
+              <DynamicRoute path="/register" component={Register} authenticated={false}/>
+              <DynamicRoute path="/login" component={Login} authenticated={false}/>
+
             </Switch>
           </Container>
         </BrowserRouter>
