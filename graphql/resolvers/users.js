@@ -86,7 +86,7 @@ module.exports = {
         // if (userByEmail) errors.email = 'email is taken';
 
         if(Object.keys(errors).length > 0) {
-          throw new UserInputError('',errors);
+          throw errors;
         }
 
         // Hash password
