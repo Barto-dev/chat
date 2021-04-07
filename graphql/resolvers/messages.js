@@ -5,13 +5,13 @@ const { Message, User } = require('../../models');
 
 module.exports = {
   Query: {
-    getMessages: async (parent, {from}, {user}) => {
+    getMessages: async (parent, { from }, { user }) => {
       try {
         if (!user) throw new AuthenticationError('Unauthenticated');
 
         const otherUser = await User.findOne({
-          where: {username: from}
-        });
+          where: { username: from }
+        })
         if (!otherUser) throw new UserInputError('User not found');
 
         const usernames = [user.username, otherUser.username]
@@ -21,7 +21,7 @@ module.exports = {
             from: { [Op.in]: usernames },
             to: { [Op.in]: usernames },
           },
-          order: [['createdAt', 'DESC']]
+          order: [['createdAt', 'DESC']],
         })
 
         return messages;

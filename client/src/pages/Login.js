@@ -59,8 +59,8 @@ const Login = (props) => {
         <Form onSubmit={submitLoginForm}>
 
           <Form.Group>
-            <Form.Label className={errors.username && 'text-danger'}>
-              {errors.username ?? 'Username'}
+            <Form.Label className={errors?.username && 'text-danger'}>
+              {errors?.username ?? 'Username'}
             </Form.Label>
             <Form.Control type="text"
                           name="username"
