@@ -1,6 +1,5 @@
 import React, {createContext, useReducer, useContext} from 'react';
 
-
 const MessageStateContext = createContext();
 const MessageDispatchContext = createContext();
 
@@ -10,6 +9,18 @@ const messageReducer = (state, action) => {
       return {
         ...state,
         users: action.payload
+      }
+    case 'SET_USER_MESSAGES':
+      const {username, messages} = action.payload;
+      return {}
+    case 'SET_SELECTED_USER':
+      const usersCopy = state.users.map(user => ({
+        ...user,
+        selected: user.username === action.payload
+      }))
+      return {
+        ...state,
+        users: usersCopy
       }
 
     default:

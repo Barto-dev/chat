@@ -16,9 +16,10 @@ const GET_USERS = gql`
     }
 `
 
-const Users = ({setSelectedUser, selectedUser}) => {
+const Users = () => {
   const dispatch = useMessageDispatch();
   const {users} = useMessageState();
+  const selectedUser = users?.find(user => user.selected === true)?.username
   const {loading} = useQuery(GET_USERS, {
     onCompleted: data => dispatch({type: 'SET_USERS', payload: data.getUsers}),
     onError: err => console.error(err)
@@ -36,7 +37,7 @@ const Users = ({setSelectedUser, selectedUser}) => {
         <div role="button"
              className={classNames("user-div d-flex p-3",{'bg-white' : selected})}
              key={user.username}
-             onClick={() => setSelectedUser(user.username)}>
+             onClick={() => dispatch({type: 'SET_SELECTED_USER', payload: user.username})}>
           <Image src={user.imageUrl}
                  roundedCircle
                  className="mr-2"
