@@ -31,7 +31,7 @@ const Messages = () => {
       dispatch({
         type: 'SET_USER_MESSAGES', payload: {
           username: selectedUser.username,
-          messages: messagesData.messages
+          messages: messagesData.getMessages
         }
       })
     }
@@ -47,7 +47,7 @@ const Messages = () => {
       <p key={message.uuid}>{message.content}</p>
     ))
   } else if (messages.length === 0) {
-    selectedChatMarkup = <p>You are now connected! Send your first message</p>
+    selectedChatMarkup = <p>You are now connected! Send your first message!</p>
   }
 
   return (
