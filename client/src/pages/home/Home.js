@@ -1,19 +1,13 @@
-import React, {Fragment, useState, useEffect} from 'react';
-import {Row, Col, Button} from 'react-bootstrap';
+import React, {Fragment, useState} from 'react';
+import {Row, Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {gql, useLazyQuery} from '@apollo/client';
 import {useAuthDispatch} from '../../context/auth';
 
 import Users from './Users';
+import Messages from './Messages';
 
 
-const GET_MESSAGES = gql`
-    query getMessages($from: String!) {
-        getMessages(from: $from) {
-            uuid from to content createdAt
-        }
-    }
-`
+
 
 const Home = ({history}) => {
   const dispatch = useAuthDispatch();
@@ -23,16 +17,6 @@ const Home = ({history}) => {
     dispatch({type: 'LOGOUT'});
     history.push('/login')
   }
-
-
-
-  const [getMessages, {loading: messagesLoading, data: messagesData}] = useLazyQuery(GET_MESSAGES);
-
-  useEffect(() => {
-    if (selectedUser) {
-      getMessages({variables: {from: selectedUser}})
-    }
-  }, [selectedUser]);
 
   return (
     <Fragment>
@@ -47,13 +31,7 @@ const Home = ({history}) => {
       </Row>
       <Row className="bg-white">
         <Users setSelectedUser={setSelectedUser} selectedUser={selectedUser}/>
-        <Col xs={8}>
-          {messagesData && messagesData.getMessages.length > 0 ? (
-            messagesData.getMessages.map(message => (
-              <p key={message.uuid}>{message.content}</p>
-            ))
-          ) : <p>Messages</p>}
-        </Col>
+        <Messages selectedUser={selectedUser}/>
       </Row>
     </Fragment>
   );
