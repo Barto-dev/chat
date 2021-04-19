@@ -12,7 +12,8 @@ const Home = ({history}) => {
 
   const logout = () => {
     dispatch({type: 'LOGOUT'});
-    history.push('/login')
+    // So that apollo does not cache messages
+    window.location.href = '/login';
   }
 
   return (
