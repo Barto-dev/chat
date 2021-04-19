@@ -46,8 +46,8 @@ const Messages = () => {
     selectedChatMarkup = <p>Loading...</p>
   } else if (messages.length > 0) {
     selectedChatMarkup = messages.map((message, index) => (
-      <Fragment>
-        <Message key={message.uuid} message={message} />
+      <Fragment  key={message.uuid}>
+        <Message message={message} />
         {index === messages.length - 1 && (<div className="invisible"><hr className="m-0"/></div>)}
       </Fragment>
     ))
@@ -56,7 +56,7 @@ const Messages = () => {
   }
 
   return (
-    <Col xs={8} className="messages-box d-flex flex-column-reverse">
+    <Col xs={10} md={8} className="messages-box d-flex flex-column-reverse">
       {selectedChatMarkup}
     </Col>
   );
