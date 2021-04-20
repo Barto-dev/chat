@@ -9,7 +9,11 @@ import Message from './Message';
 const SEND_MESSAGE = gql`
     mutation sendMessage($to: String!, $content: String!) {
         sendMessage(to: $to, content: $content) {
-            uuid from to content createdAt
+            uuid
+            from
+            to
+            content
+            createdAt
         }
     }
 `
@@ -23,20 +27,22 @@ const GET_MESSAGES = gql`
 `
 
 const Messages = () => {
-  const dispatch = useMessageDispatch();
   const {users} = useMessageState();
-
+  const dispatch = useMessageDispatch();
   const [content, setContent] = useState('');
 
-  const selectedUser = users?.find(user => user.selected === true);
-  const messages = selectedUser?.messages;
+  const selectedUser = users?.find(user => user.selected === true)
+  const messages = selectedUser?.messages
 
-
-  const [getMessages, {loading: messagesLoading, data: messagesData}] = useLazyQuery(GET_MESSAGES);
+  const [
+    getMessages,
+    {loading: messagesLoading, data: messagesData},
+  ] = useLazyQuery(GET_MESSAGES)
   const [sendMessage] = useMutation(SEND_MESSAGE, {
     onCompleted: data => dispatch({
-      type: 'ADD_MESSAGE', payload: {
-        username: selectedUser,
+      type: 'ADD_MESSAGE',
+      payload: {
+        username: selectedUser.username,
         message: data.sendMessage
       }
     }),
@@ -51,7 +57,8 @@ const Messages = () => {
   useEffect(() => {
     if (messagesData) {
       dispatch({
-        type: 'SET_USER_MESSAGES', payload: {
+        type: 'SET_USER_MESSAGES',
+        payload: {
           username: selectedUser.username,
           messages: messagesData.getMessages,
         },
@@ -61,12 +68,9 @@ const Messages = () => {
 
   const submitMessage = (e) => {
     e.preventDefault();
-
     if (content.trim() === '' || !selectedUser) return;
-
     setContent('')
     sendMessage({variables: {to: selectedUser.username, content}})
-
   }
 
   let selectedChatMarkup;
@@ -80,7 +84,8 @@ const Messages = () => {
         <Message message={message} />
         {index === messages.length - 1 && (<div className="invisible">
           <hr className="m-0" />
-        </div>)}
+        </div>
+        )}
       </Fragment>
     ))
   } else if (messages.length === 0) {
@@ -99,7 +104,7 @@ const Messages = () => {
                           className="message-input p-4 rounded-pill bg-secondary border-0"
                           placeholder="Type a message"
                           value={content} onChange={e => setContent(e.target.value)} />
-            <i role="button" className="fas fa-paper-plane fa-2x text-primary ml-2" onClick={submitMessage}/>
+            <i role="button" className="fas fa-paper-plane fa-2x text-primary ml-2" onClick={submitMessage} />
           </Form.Group>
         </Form>
       </div>
