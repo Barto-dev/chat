@@ -2,6 +2,9 @@ const { UserInputError, AuthenticationError } = require('apollo-server');
 const { Op } = require('sequelize');
 
 const { Message, User } = require('../../models');
+const {PubSub} = require('apollo-server');
+
+const pubSub = new PubSub();
 
 module.exports = {
   Query: {
@@ -55,11 +58,19 @@ module.exports = {
           to,
           content
         })
+
+        await pubSub.publish('NEW_MESSAGE', {newMessage: message})
+
         return message;
       } catch (err) {
         console.error(err)
         throw err
       }
+    }
+  },
+  Subscription: {
+    newMessage: {
+      subscribe: () => pubSub.asyncIterator(['NEW_MESSAGE'])
     }
   }
 };
