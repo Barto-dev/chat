@@ -1,17 +1,48 @@
-import React, {Fragment} from 'react';
+import React, {Fragment, useEffect} from 'react';
 import {Row, Button} from 'react-bootstrap';
 import {Link} from 'react-router-dom';
-import {useAuthDispatch} from '../../context/auth';
+import {useAuthDispatch, useAuthState} from '../../context/auth';
+import {useMessageDispatch} from '../../context/message';
+import {useSubscription, gql} from '@apollo/client';
 
 import Users from './Users';
 import Messages from './Messages';
 
-const Home = ({history}) => {
-  const dispatch = useAuthDispatch();
+const NEW_MESSAGE = gql`
+    subscription newMessage{
+        newMessage{
+            uuid from to content createdAt
+        }
+    }
+`
 
+const Home = ({history}) => {
+  const authDispatch = useAuthDispatch();
+  const messageDispatch = useMessageDispatch();
+
+  const {user} = useAuthState();
+
+  const {data: messageData, error: messageError} = useSubscription(NEW_MESSAGE)
+
+  useEffect(() => {
+    if (messageError) console.log(messageError)
+
+    if (messageData) {
+      const message = messageData.newMessage
+      const otherUser = user.username === message.to ? message.from : message.to
+
+      messageDispatch({
+        type: 'ADD_MESSAGE',
+        payload: {
+          username: otherUser,
+          message
+        }
+      })
+    }
+  }, [messageError, messageData])
 
   const logout = () => {
-    dispatch({type: 'LOGOUT'});
+    authDispatch({type: 'LOGOUT'});
     // So that apollo does not cache messages
     window.location.href = '/login';
   }
@@ -29,7 +60,7 @@ const Home = ({history}) => {
       </Row>
       <Row className="bg-white">
         <Users />
-        <Messages/>
+        <Messages />
       </Row>
     </Fragment>
   );

@@ -72,10 +72,7 @@ module.exports = {
         if (!user) throw new AuthenticationError('Unauthenticated')
         return pubsub.asyncIterator(['NEW_MESSAGE'])
       }, ({newMessage}, _, {user}) => {
-        if (newMessage.from === user.username || newMessage.to === user.username) {
-          return true
-        }
-        return false;
+        return newMessage.from === user.username || newMessage.to === user.username;
       })
     }
   }
