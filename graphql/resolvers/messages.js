@@ -1,17 +1,17 @@
-const { UserInputError, AuthenticationError,ForbiddenError, withFilter } = require('apollo-server');
-const { Op } = require('sequelize');
+const {UserInputError, AuthenticationError, ForbiddenError, withFilter} = require('apollo-server');
+const {Op} = require('sequelize');
 
-const { Message, User, Reaction } = require('../../models');
+const {Message, User, Reaction} = require('../../models');
 
 
 module.exports = {
   Query: {
-    getMessages: async (parent, { from }, { user }) => {
+    getMessages: async (parent, {from}, {user}) => {
       try {
         if (!user) throw new AuthenticationError('Unauthenticated');
 
         const otherUser = await User.findOne({
-          where: { username: from }
+          where: {username: from}
         })
         if (!otherUser) throw new UserInputError('User not found');
 
@@ -19,8 +19,8 @@ module.exports = {
 
         const messages = await Message.findAll({
           where: {
-            from: { [Op.in]: usernames },
-            to: { [Op.in]: usernames },
+            from: {[Op.in]: usernames},
+            to: {[Op.in]: usernames},
           },
           order: [['createdAt', 'DESC']],
         })
@@ -37,7 +37,7 @@ module.exports = {
     sendMessage: async (parent, {to, content}, {user, pubsub}) => {
       try {
         if (!user) throw new AuthenticationError('Unauthenticated');
-        const recipient = await User.findOne({ where: { username: to } });
+        const recipient = await User.findOne({where: {username: to}});
 
         if (!recipient) {
           throw new UserInputError('User not found');
@@ -45,9 +45,7 @@ module.exports = {
           throw new UserInputError('You cant message yourself');
         }
 
-
-
-        if(content.trim() === '') {
+        if (content.trim() === '') {
           throw new UserInputError('Message is empty');
         }
 
@@ -73,7 +71,7 @@ module.exports = {
           throw new UserInputError('Invalid reaction')
         }
         // Get user
-        const username = user ? user.username: '';
+        const username = user ? user.username : '';
         user = await User.findOne({where: {username}});
         if (!user) throw new AuthenticationError('Unauthenticated');
 
@@ -101,7 +99,7 @@ module.exports = {
           })
         }
 
-        // pubsub.publish('NEW_REACTION', {newReaction: reaction});
+        pubsub.publish('NEW_REACTION', {newReaction: reaction});
 
         return reaction
 
@@ -114,10 +112,22 @@ module.exports = {
     newMessage: {
       subscribe: withFilter((_, __, {pubsub, user}) => {
         if (!user) throw new AuthenticationError('Unauthenticated')
-        return pubsub.asyncIterator(['NEW_MESSAGE'])
+        return pubsub.asyncIterator('NEW_MESSAGE')
       }, ({newMessage}, _, {user}) => {
         return newMessage.from === user.username || newMessage.to === user.username;
       })
-    }
+    },
+    newReaction: {
+      subscribe: withFilter(
+        (_, __, {pubsub, user}) => {
+          if (!user) throw new AuthenticationError('Unauthenticated')
+          return pubsub.asyncIterator('NEW_REACTION')
+        },
+        async ({newReaction}, _, {user}) => {
+          const message = await newReaction.getMessage()
+          return message.from === user.username || message.to === user.username;
+        }
+      ),
+    },
   }
 };
