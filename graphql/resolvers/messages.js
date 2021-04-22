@@ -64,6 +64,18 @@ module.exports = {
         console.error(err)
         throw err
       }
+    },
+    reactToMessage: async (_, {uuid, content}, {user}) => {
+      const reactions = ['❤️', '😆', '😯', '😢', '😡', '👍', '👎'];
+      try {
+        // Validate reaction content
+        if (!reactions.includes(content)) {
+          throw new UserInputError('Invalid reactions')
+        }
+
+      } catch (err) {
+        throw err
+      }
     }
   },
   Subscription: {
