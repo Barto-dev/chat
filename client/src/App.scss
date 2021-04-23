@@ -47,3 +47,12 @@ body {
   text-align: center;
   margin-bottom: 0.5rem;
 }
+
+.react-icon-button:hover {
+  text-decoration: none;
+}
+
+.react-icon-button:focus {
+  box-shadow: initial;
+  outline: none;
+}
