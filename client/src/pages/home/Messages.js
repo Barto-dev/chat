@@ -14,9 +14,6 @@ const SEND_MESSAGE = gql`
             to
             content
             createdAt
-            reactions{
-                uuid content
-            }
         }
     }
 `
@@ -24,7 +21,9 @@ const SEND_MESSAGE = gql`
 const GET_MESSAGES = gql`
     query getMessages($from: String!) {
         getMessages(from: $from) {
-            uuid from to content createdAt
+            uuid from to content createdAt  reactions{
+                uuid content
+            }
         }
     }
 `
@@ -79,8 +78,8 @@ const Messages = () => {
       <Fragment key={message.uuid}>
         <Message message={message} />
         {index === messages.length - 1 && (<div className="invisible">
-          <hr className="m-0" />
-        </div>
+            <hr className="m-0" />
+          </div>
         )}
       </Fragment>
     ))
