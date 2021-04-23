@@ -70,7 +70,7 @@ const Message = ({message}) => {
         placement={sent ? 'right' : 'left'}
         overlay={
           <Tooltip>
-            {moment(message.createdAt).format('MMMM DD, YYYY @ h:mm a')}
+            {moment(message.createdAt).format('MMM DD, YYYY @ h:mm a')}
           </Tooltip>
         } transition={false}>
 
