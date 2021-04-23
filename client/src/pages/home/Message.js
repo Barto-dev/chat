@@ -24,7 +24,7 @@ const Message = ({message}) => {
                     transition={false}
                     overlay={
                       <Popover className="rounded-pill">
-                        <Popover.Content>
+                        <Popover.Content className="react-button-popover px-0 py-1">
                           {reactions.map(reaction => (
                             <Button
                               variant="link"
