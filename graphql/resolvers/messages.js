@@ -23,6 +23,7 @@ module.exports = {
             to: {[Op.in]: usernames},
           },
           order: [['createdAt', 'DESC']],
+          include: [{model: Reaction, as: 'reactions'}]
         })
 
         return messages;
